@@ -1,0 +1,5 @@
+.DS_Store
+Thumbs.db
+
+# Local editor permissions
+.claude/settings.local.json
