@@ -103,7 +103,7 @@ a {
 }
 
 .hero__mark {
-  width: clamp(4.2rem, 8vw, 6.25rem);
+  width: clamp(15rem, 15vw, 15rem);
   height: auto;
 }
 

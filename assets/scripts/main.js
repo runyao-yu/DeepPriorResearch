@@ -149,6 +149,7 @@ function mountPriceCanvas() {
     height: 0,
     dpr: 1,
     stars: [],
+    dust: [],
     frameId: 0,
   };
 
@@ -189,10 +190,23 @@ function mountPriceCanvas() {
       glow: "rgba(255, 255, 255, 0.08)",
       phase: 3.1,
     },
+    {
+      base: 0.38,
+      amplitude: 0.052,
+      swing: 5.4,
+      micro: 18,
+      speed: 0.00009,
+      pulse: 0.04,
+      width: 0.85,
+      color: "rgba(255, 255, 255, 0.11)",
+      glow: "rgba(255, 255, 255, 0.04)",
+      phase: 4.35,
+    },
   ];
 
   function buildStars() {
     const count = Math.max(28, Math.floor(state.width / 18));
+    const dustCount = Math.max(16, Math.floor(state.width / 38));
 
     state.stars = Array.from({ length: count }, () => ({
       x: Math.random() * state.width,
@@ -200,6 +214,16 @@ function mountPriceCanvas() {
       radius: Math.random() * 1.5 + 0.2,
       alpha: Math.random() * 0.5 + 0.08,
       speed: Math.random() * 0.05 + 0.018,
+    }));
+
+    state.dust = Array.from({ length: dustCount }, () => ({
+      x: state.width * (0.28 + Math.random() * 0.44),
+      y: state.height * (0.17 + Math.random() * 0.26),
+      radius: Math.random() * 1.1 + 0.18,
+      alpha: Math.random() * 0.18 + 0.03,
+      driftX: Math.random() * 0.0007 + 0.00025,
+      driftY: Math.random() * 0.0006 + 0.00018,
+      swing: Math.random() * 16 + 6,
     }));
   }
 
@@ -249,6 +273,24 @@ function mountPriceCanvas() {
       context.beginPath();
       context.fillStyle = `rgba(255, 255, 255, ${alpha})`;
       context.arc(x, star.y, star.radius, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    context.restore();
+  }
+
+  function drawDust(time) {
+    context.save();
+
+    state.dust.forEach((particle) => {
+      const x = particle.x + Math.sin(time * particle.driftX + particle.y) * particle.swing;
+      const y =
+        particle.y + Math.cos(time * particle.driftY + particle.x) * (particle.swing * 0.45);
+      const alpha = particle.alpha * (0.7 + 0.3 * Math.sin(time * 0.0018 + particle.x));
+
+      context.beginPath();
+      context.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      context.arc(x, y, particle.radius, 0, Math.PI * 2);
       context.fill();
     });
 
@@ -339,6 +381,7 @@ function mountPriceCanvas() {
   function drawFrame(time) {
     drawBackdrop();
     drawStars(time);
+    drawDust(time);
     drawSweep(time);
 
     series.forEach((line, index) => {
