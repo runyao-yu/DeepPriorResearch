@@ -8,7 +8,7 @@ export const siteContent = {
     eyebrow: "Committee",
     title: "DEEPPRIOR",
     description:
-      "We focus on advanced data-driven forecasting in electricity price, renewable generation, load, and battery systems.",
+      "Deep learning meets prior knowledge for quantitative energy forecasting.",
     members: [
       {
         name: "Runyao Yu",
@@ -21,24 +21,24 @@ export const siteContent = {
         name: "Ruiling Ding",
         role: "Co-Founder",
         initials: "RD",
-        bio: "MSc from Frankfurt School, with exchange experience at UC Berkeley and British Columbia University; Market Analyst at Morgan Stanley, with industrial experience at Sumitomo Mitsui Banking, PwC, Infineon, and Deutsche Börse.",
+        bio: "MSc from Frankfurt School, with exchange experience at UC Berkeley and British Columbia University; Market Analyst at Morgan Stanley, with industrial experience at Sumitomo Mitsui Banking, PwC, Infineon, and Deutsche Boerse.",
         image: "",
       },
-            {
+      {
         name: "Prof. Derek W. Bunn",
         role: "Committee Chair",
         initials: "DWB",
         bio: "to be filled.",
         image: "",
       },
-            {
+      {
         name: "tbf",
         role: "Committee Chair",
         initials: "PP",
         bio: "to be filled.",
         image: "",
       },
-            {
+      {
         name: "tbf",
         role: "Committee Chair",
         initials: "JLC",
@@ -52,7 +52,6 @@ export const siteContent = {
         bio: "to be filled.",
         image: "",
       },
-
       {
         name: "Dr. Jochen Stiasny",
         role: "Member",
@@ -60,7 +59,6 @@ export const siteContent = {
         bio: "Postdoc at TU Delft, PhD from DTU, and MSc from ETH Zurich, with exchange experience at Washington University and Lund University; Team Lead at AMZ Racing and industrial experience at Secure Switzerland AG.",
         image: "",
       },
-
       {
         name: "Dr. Andreas Billert",
         role: "Member",
@@ -75,9 +73,6 @@ export const siteContent = {
         bio: "MSc from RWTH Aachen and BSc from SJTU; Senior Deep Learning Engineer at Hyundai MOBIS, with industrial experience at Bosch (BCAI), Volkswagen, and Michelin.",
         image: "",
       },
-
-
-
       {
         name: "Yuqicheng Zhu",
         role: "Member",
@@ -85,7 +80,6 @@ export const siteContent = {
         bio: "PhD from Max Planck Institute and University of Stuttgart, MSc from TU Munich, with visiting position at Oxford University; Industrial experience at Bosch (BCAI).",
         image: "",
       },
-
       {
         name: "Yujie Chen",
         role: "Member",
@@ -99,6 +93,54 @@ export const siteContent = {
         initials: "WW",
         bio: "PhD from University of Technology Sydney; recipient of the national scholarship for postgraduates and UTS international research scholarship.",
         image: "",
+      },
+    ],
+  },
+  research: {
+    eyebrow: "Research",
+    title: "A research archive built for depth.",
+    description:
+      "Each paper card below is generated from assets/scripts/site-data.js. Add title, authors, journal, year, and three figures there.",
+    papers: [
+      {
+        title: "Placeholder Paper One",
+        authors: "Runyao Yu, Collaborator Name, Collaborator Name",
+        journal: "Journal / Conference Name",
+        year: "2026",
+        figures: [
+          {
+            title: "Figure 01",
+            image: "",
+          },
+          {
+            title: "Figure 02",
+            image: "",
+          },
+          {
+            title: "Figure 03",
+            image: "",
+          },
+        ],
+      },
+      {
+        title: "Placeholder Paper Two",
+        authors: "Author Name, Author Name, Author Name",
+        journal: "Journal / Conference Name",
+        year: "2025",
+        figures: [
+          {
+            title: "Figure 01",
+            image: "",
+          },
+          {
+            title: "Figure 02",
+            image: "",
+          },
+          {
+            title: "Figure 03",
+            image: "",
+          },
+        ],
       },
     ],
   },

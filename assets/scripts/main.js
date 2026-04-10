@@ -12,6 +12,9 @@ function hydrateCopy() {
   const title = document.querySelector("[data-committee-title]");
   const description = document.querySelector("[data-committee-description]");
   const footerNote = document.querySelector("[data-footer-note]");
+  const researchEyebrow = document.querySelector("[data-research-eyebrow]");
+  const researchTitle = document.querySelector("[data-research-title]");
+  const researchDescription = document.querySelector("[data-research-description]");
 
   if (tagline) {
     tagline.textContent = siteContent.brand.tagline;
@@ -31,6 +34,18 @@ function hydrateCopy() {
 
   if (footerNote) {
     footerNote.textContent = siteContent.brand.footerNote;
+  }
+
+  if (researchEyebrow) {
+    researchEyebrow.textContent = siteContent.research.eyebrow;
+  }
+
+  if (researchTitle) {
+    researchTitle.textContent = siteContent.research.title;
+  }
+
+  if (researchDescription) {
+    researchDescription.textContent = siteContent.research.description;
   }
 }
 
@@ -103,6 +118,94 @@ function renderCommittee() {
   });
 
   grid.replaceChildren(fragment);
+}
+
+function createFigurePanel(figure, paperTitle, figureIndex) {
+  const frame = document.createElement("figure");
+  frame.className = "paper-figure";
+
+  if (figure.image) {
+    const image = document.createElement("img");
+    image.className = "paper-figure__media";
+    image.src = figure.image;
+    image.alt = `${paperTitle} ${figure.title}`;
+    image.loading = "lazy";
+    frame.append(image);
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "paper-figure__placeholder";
+    placeholder.textContent = String(figureIndex + 1).padStart(2, "0");
+    frame.append(placeholder);
+  }
+
+  const caption = document.createElement("figcaption");
+  caption.className = "paper-figure__caption";
+  caption.textContent = figure.title;
+  frame.append(caption);
+
+  return frame;
+}
+
+function createResearchCard(paper, index) {
+  const card = document.createElement("article");
+  card.className = "paper-card";
+  card.style.setProperty("--delay", `${index * 110}ms`);
+
+  const intro = document.createElement("div");
+  intro.className = "paper-card__intro";
+
+  const indexLabel = document.createElement("p");
+  indexLabel.className = "paper-card__index";
+  indexLabel.textContent = `Paper ${String(index + 1).padStart(2, "0")}`;
+
+  const title = document.createElement("h3");
+  title.className = "paper-card__title";
+  title.textContent = paper.title;
+
+  const authors = document.createElement("p");
+  authors.className = "paper-card__authors";
+  authors.textContent = paper.authors;
+
+  const meta = document.createElement("div");
+  meta.className = "paper-card__meta";
+
+  const journal = document.createElement("span");
+  journal.className = "paper-chip";
+  journal.textContent = paper.journal;
+
+  const year = document.createElement("span");
+  year.className = "paper-chip";
+  year.textContent = paper.year;
+
+  meta.append(journal, year);
+  intro.append(indexLabel, title, authors, meta);
+
+  const figures = document.createElement("div");
+  figures.className = "paper-card__figures";
+
+  paper.figures.forEach((figure, figureIndex) => {
+    figures.append(createFigurePanel(figure, paper.title, figureIndex));
+  });
+
+  card.append(intro, figures);
+
+  return card;
+}
+
+function renderResearch() {
+  const list = document.querySelector("#research-list");
+
+  if (!list) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  siteContent.research.papers.forEach((paper, index) => {
+    fragment.append(createResearchCard(paper, index));
+  });
+
+  list.replaceChildren(fragment);
 }
 
 function syncCommitteeBios() {
@@ -186,6 +289,7 @@ function setupReveal() {
   const targets = [
     ...document.querySelectorAll(".reveal"),
     ...document.querySelectorAll(".member-card"),
+    ...document.querySelectorAll(".paper-card"),
   ];
 
   if (!targets.length) {
@@ -236,7 +340,12 @@ function mountPriceCanvas() {
     dpr: 1,
     stars: [],
     dust: [],
+    sampleXs: new Float32Array(0),
+    sampleRatios: new Float32Array(0),
+    seriesYs: [],
+    backdropGradient: null,
     frameId: 0,
+    heroInView: true,
   };
 
   const series = [
@@ -313,6 +422,33 @@ function mountPriceCanvas() {
     }));
   }
 
+  function buildSeriesBuffers() {
+    const sampleCount = Math.floor((state.width + 16) / 14) + 1;
+    state.sampleXs = new Float32Array(sampleCount);
+    state.sampleRatios = new Float32Array(sampleCount);
+    state.seriesYs = series.map(() => new Float32Array(sampleCount));
+
+    for (let index = 0; index < sampleCount; index += 1) {
+      const x = index * 14;
+      state.sampleXs[index] = x;
+      state.sampleRatios[index] = state.width ? x / state.width : 0;
+    }
+  }
+
+  function buildBackdropGradient() {
+    const radial = context.createRadialGradient(
+      state.width * 0.5,
+      state.height * 0.38,
+      0,
+      state.width * 0.5,
+      state.height * 0.38,
+      state.width * 0.5,
+    );
+    radial.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+    radial.addColorStop(1, "rgba(255, 255, 255, 0)");
+    state.backdropGradient = radial;
+  }
+
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
     state.width = bounds.width || window.innerWidth;
@@ -324,6 +460,8 @@ function mountPriceCanvas() {
     context.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 
     buildStars();
+    buildSeriesBuffers();
+    buildBackdropGradient();
     drawFrame(performance.now());
   }
 
@@ -333,18 +471,7 @@ function mountPriceCanvas() {
     context.fillStyle = "#020202";
     context.fillRect(0, 0, state.width, state.height);
 
-    const radial = context.createRadialGradient(
-      state.width * 0.5,
-      state.height * 0.38,
-      0,
-      state.width * 0.5,
-      state.height * 0.38,
-      state.width * 0.5,
-    );
-    radial.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-    radial.addColorStop(1, "rgba(255, 255, 255, 0)");
-
-    context.fillStyle = radial;
+    context.fillStyle = state.backdropGradient ?? "#020202";
     context.fillRect(0, 0, state.width, state.height);
   }
 
@@ -394,8 +521,7 @@ function mountPriceCanvas() {
     context.fillRect(0, 0, state.width, state.height);
   }
 
-  function getSeriesY(line, x, time) {
-    const ratio = x / state.width;
+  function getSeriesY(line, ratio, time) {
     const primaryWave = Math.sin(ratio * line.swing + time * line.speed + line.phase) * line.amplitude;
     const microWave =
       Math.sin(ratio * line.micro + time * line.speed * 3.7 + line.phase * 1.85) * 0.018;
@@ -407,18 +533,19 @@ function mountPriceCanvas() {
     return state.height * (line.base - primaryWave - microWave - drift - pulse);
   }
 
-  function createSeriesPoints(line, time) {
-    const points = [];
+  function updateSeriesSamples(time) {
+    for (let lineIndex = 0; lineIndex < series.length; lineIndex += 1) {
+      const line = series[lineIndex];
+      const yValues = state.seriesYs[lineIndex];
 
-    for (let x = 0; x <= state.width + 16; x += 14) {
-      points.push({ x, y: getSeriesY(line, x, time) });
+      for (let pointIndex = 0; pointIndex < state.sampleXs.length; pointIndex += 1) {
+        yValues[pointIndex] = getSeriesY(line, state.sampleRatios[pointIndex], time);
+      }
     }
-
-    return points;
   }
 
-  function drawSeries(points, line, index) {
-    if (!points.length) {
+  function drawSeries(line, yValues, index) {
+    if (!yValues.length) {
       return;
     }
 
@@ -428,8 +555,10 @@ function mountPriceCanvas() {
       fill.addColorStop(1, "rgba(255, 255, 255, 0)");
 
       context.beginPath();
-      context.moveTo(points[0].x, points[0].y);
-      points.forEach((point) => context.lineTo(point.x, point.y));
+      context.moveTo(state.sampleXs[0], yValues[0]);
+      for (let index = 1; index < state.sampleXs.length; index += 1) {
+        context.lineTo(state.sampleXs[index], yValues[index]);
+      }
       context.lineTo(state.width, state.height + 40);
       context.lineTo(0, state.height + 40);
       context.closePath();
@@ -439,8 +568,10 @@ function mountPriceCanvas() {
 
     context.save();
     context.beginPath();
-    context.moveTo(points[0].x, points[0].y);
-    points.forEach((point) => context.lineTo(point.x, point.y));
+    context.moveTo(state.sampleXs[0], yValues[0]);
+    for (let index = 1; index < state.sampleXs.length; index += 1) {
+      context.lineTo(state.sampleXs[index], yValues[index]);
+    }
     context.lineWidth = line.width;
     context.strokeStyle = line.color;
     context.shadowBlur = 24;
@@ -452,7 +583,7 @@ function mountPriceCanvas() {
   function drawMarker(line, time) {
     const ratio = (time * line.speed * 0.09 + line.phase * 0.11) % 1;
     const x = state.width * ratio;
-    const y = getSeriesY(line, x, time);
+    const y = getSeriesY(line, ratio, time);
 
     context.save();
     context.beginPath();
@@ -465,21 +596,40 @@ function mountPriceCanvas() {
   }
 
   function drawFrame(time) {
+    const normalizedTime = time % 600000;
+
     drawBackdrop();
-    drawStars(time);
-    drawDust(time);
-    drawSweep(time);
+    drawStars(normalizedTime);
+    drawDust(normalizedTime);
+    drawSweep(normalizedTime);
+    updateSeriesSamples(normalizedTime);
 
     series.forEach((line, index) => {
-      const points = createSeriesPoints(line, time);
-      drawSeries(points, line, index);
+      drawSeries(line, state.seriesYs[index], index);
     });
 
-    drawMarker(series[0], time);
+    drawMarker(series[0], normalizedTime);
   }
 
   function animate(time) {
     drawFrame(time);
+    state.frameId = window.requestAnimationFrame(animate);
+  }
+
+  function stopAnimation() {
+    if (!state.frameId) {
+      return;
+    }
+
+    window.cancelAnimationFrame(state.frameId);
+    state.frameId = 0;
+  }
+
+  function startAnimation() {
+    if (prefersReducedMotion || state.frameId || document.hidden || !state.heroInView) {
+      return;
+    }
+
     state.frameId = window.requestAnimationFrame(animate);
   }
 
@@ -489,18 +639,39 @@ function mountPriceCanvas() {
     }
 
     if (document.hidden) {
-      window.cancelAnimationFrame(state.frameId);
-      state.frameId = 0;
+      stopAnimation();
       return;
     }
 
-    if (!state.frameId) {
-      state.frameId = window.requestAnimationFrame(animate);
-    }
+    startAnimation();
   }
 
   window.addEventListener("resize", resizeCanvas, { passive: true });
   document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  const heroSection = canvas.closest(".hero");
+
+  if (heroSection instanceof HTMLElement && "IntersectionObserver" in window) {
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        state.heroInView = entry?.isIntersecting ?? true;
+
+        if (state.heroInView) {
+          drawFrame(performance.now());
+          startAnimation();
+          return;
+        }
+
+        stopAnimation();
+      },
+      {
+        threshold: 0.02,
+      },
+    );
+
+    heroObserver.observe(heroSection);
+  }
 
   resizeCanvas();
 
@@ -509,11 +680,12 @@ function mountPriceCanvas() {
     return;
   }
 
-  state.frameId = window.requestAnimationFrame(animate);
+  startAnimation();
 }
 
 hydrateCopy();
 renderCommittee();
+renderResearch();
 setupCommitteeToggles();
 setupReveal();
 mountPriceCanvas();
