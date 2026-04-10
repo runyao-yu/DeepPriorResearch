@@ -1,11 +1,7 @@
-# DeepPrior Website
-
-Minimal static GitHub Pages site for DeepPrior.
-
 ## Structure
 
 - `index.html`: landing page
-- `assets/styles/main.css`: all styling and layout
+- `assets/styles/main.css`: all styling and layout (font, size, color, etc.)
 - `assets/scripts/site-data.js`: editable brand and committee content
 - `assets/scripts/main.js`: team rendering, reveal logic, and hero canvas animation
 - `assets/media/`: placeholder brand assets
@@ -19,9 +15,3 @@ Minimal static GitHub Pages site for DeepPrior.
 ## Hero Animation
 
 The moving background is a lightweight canvas animation, not a GIF. This is the usual premium approach for landing pages because it stays sharp, loads faster, and is easier to tune than a looping video or GIF.
-
-## Deploy To GitHub Pages
-
-1. Push to `main`.
-2. In GitHub repository settings, enable Pages and set the source to `GitHub Actions`.
-3. The workflow in `.github/workflows/deploy.yml` will publish the site.

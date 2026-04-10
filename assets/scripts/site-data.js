@@ -1,8 +1,8 @@
 export const siteContent = {
   brand: {
     name: "DeepPrior",
-    tagline: "A quantitative research organization in energy forecasting",
-    footerNote: "A quantitative research organization in energy forecasting",
+    tagline: "A Quantitative Research Organization",
+    footerNote: "A Quantitative Research Organization",
   },
   committee: {
     eyebrow: "Committee",

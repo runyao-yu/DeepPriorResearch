@@ -72,9 +72,18 @@ function createMemberCard(member, index) {
 
   const bio = document.createElement("p");
   bio.className = "member-card__bio";
+  bio.id = `member-bio-${index}`;
   bio.textContent = member.bio;
 
-  body.append(role, name, bio);
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "member-card__toggle";
+  toggle.textContent = "Read more";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", bio.id);
+  toggle.hidden = true;
+
+  body.append(role, name, bio, toggle);
   card.append(createPortrait(member), body);
 
   return card;
@@ -94,6 +103,83 @@ function renderCommittee() {
   });
 
   grid.replaceChildren(fragment);
+}
+
+function syncCommitteeBios() {
+  const cards = document.querySelectorAll(".member-card");
+
+  cards.forEach((card) => {
+    const bio = card.querySelector(".member-card__bio");
+    const toggle = card.querySelector(".member-card__toggle");
+
+    if (!(bio instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const isExpanded = card.classList.contains("is-expanded");
+
+    if (isExpanded) {
+      toggle.hidden = false;
+      toggle.textContent = "Show less";
+      toggle.setAttribute("aria-expanded", "true");
+      bio.tabIndex = 0;
+      return;
+    }
+
+    const hasOverflow = bio.scrollHeight > bio.clientHeight + 1;
+    toggle.hidden = !hasOverflow;
+    toggle.textContent = "Read more";
+    toggle.setAttribute("aria-expanded", "false");
+    bio.tabIndex = -1;
+  });
+}
+
+function setupCommitteeToggles() {
+  const grid = document.querySelector("#team-grid");
+
+  if (!(grid instanceof HTMLElement)) {
+    return;
+  }
+
+  grid.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLButtonElement) || !target.classList.contains("member-card__toggle")) {
+      return;
+    }
+
+    const card = target.closest(".member-card");
+
+    if (!(card instanceof HTMLElement)) {
+      return;
+    }
+
+    const bio = card.querySelector(".member-card__bio");
+
+    if (!(bio instanceof HTMLElement)) {
+      return;
+    }
+
+    const isExpanded = card.classList.toggle("is-expanded");
+    target.textContent = isExpanded ? "Show less" : "Read more";
+    target.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    bio.scrollTop = 0;
+    bio.tabIndex = isExpanded ? 0 : -1;
+
+    if (isExpanded) {
+      card.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }
+
+    requestAnimationFrame(syncCommitteeBios);
+  });
+
+  const handleResize = () => syncCommitteeBios();
+  window.addEventListener("resize", handleResize, { passive: true });
+
+  requestAnimationFrame(syncCommitteeBios);
 }
 
 function setupReveal() {
@@ -428,5 +514,6 @@ function mountPriceCanvas() {
 
 hydrateCopy();
 renderCommittee();
+setupCommitteeToggles();
 setupReveal();
 mountPriceCanvas();

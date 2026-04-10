@@ -8,8 +8,8 @@
   --color-paper-text: #111111;
   --color-paper-muted: rgba(17, 17, 17, 0.68);
   --font-brand: "Cormorant Garamond", serif;
-  --font-ui: "Manrope", sans-serif;
-  --font-hero-copy: "Sora", sans-serif;
+  --font-ui: "Cormorant Garamond", serif;
+  --font-hero-copy: "Cormorant Garamond", serif;
   --radius-xl: 32px;
   --radius-lg: 24px;
   --section-width: 1280px;
@@ -103,14 +103,14 @@ a {
 }
 
 .hero__mark {
-  width: clamp(15rem, 15vw, 15rem);
+  width: clamp(13rem, 13vw, 13rem);
   height: auto;
 }
 
-.hero__wordmark {
+.hero__wordmark { 
   margin: 0;
   font-family: var(--font-brand);
-  font-size: clamp(4rem, 12vw, 8.8rem);
+  font-size: clamp(3.6rem, 10.8vw, 8rem);
   line-height: 0.84;
   font-weight: 600;
   letter-spacing: 0.11em;
@@ -121,7 +121,7 @@ a {
   margin: 0;
   max-width: 34ch;
   font-family: var(--font-hero-copy);
-  font-size: clamp(0.92rem, 1.5vw, 1.05rem);
+  font-size: clamp(1rem, 1.65vw, 1.15rem);
   line-height: 1.85;
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -266,6 +266,8 @@ a {
 }
 
 .member-card__body {
+  display: grid;
+  gap: 0.7rem;
   align-self: end;
 }
 
@@ -279,7 +281,7 @@ a {
 }
 
 .member-card__name {
-  margin: 0 0 0.7rem;
+  margin: 0;
   font-size: 1.42rem;
   line-height: 1.12;
   font-weight: 800;
@@ -293,6 +295,54 @@ a {
   line-height: 1.75;
   font-weight: 400;
   letter-spacing: 0.015em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  min-height: calc(1em * 1.75 * 4);
+  max-height: calc(1em * 1.75 * 4);
+}
+
+.member-card.is-expanded .member-card__bio {
+  display: block;
+  overflow-y: auto;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  padding-right: 0.35rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(17, 17, 17, 0.25) transparent;
+}
+
+.member-card__bio::-webkit-scrollbar {
+  width: 0.38rem;
+}
+
+.member-card__bio::-webkit-scrollbar-thumb {
+  background: rgba(17, 17, 17, 0.2);
+  border-radius: 999px;
+}
+
+.member-card__toggle {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(17, 17, 17, 0.7);
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.member-card__toggle:hover {
+  color: rgba(17, 17, 17, 1);
+}
+
+.member-card__toggle[hidden] {
+  display: none;
 }
 
 .site-footer {
