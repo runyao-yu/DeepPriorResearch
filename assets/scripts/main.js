@@ -15,6 +15,9 @@ function hydrateCopy() {
   const researchEyebrow = document.querySelector("[data-research-eyebrow]");
   const researchTitle = document.querySelector("[data-research-title]");
   const researchDescription = document.querySelector("[data-research-description]");
+  const analysisEyebrow = document.querySelector("[data-analysis-eyebrow]");
+  const analysisTitle = document.querySelector("[data-analysis-title]");
+  const analysisDescription = document.querySelector("[data-analysis-description]");
 
   if (tagline) {
     tagline.textContent = siteContent.brand.tagline;
@@ -46,6 +49,18 @@ function hydrateCopy() {
 
   if (researchDescription) {
     researchDescription.textContent = siteContent.research.description;
+  }
+
+  if (analysisEyebrow) {
+    analysisEyebrow.textContent = siteContent.analysis.eyebrow;
+  }
+
+  if (analysisTitle) {
+    analysisTitle.textContent = siteContent.analysis.title;
+  }
+
+  if (analysisDescription) {
+    analysisDescription.textContent = siteContent.analysis.description;
   }
 }
 
@@ -124,24 +139,27 @@ function createFigurePanel(figure, paperTitle, figureIndex) {
   const frame = document.createElement("figure");
   frame.className = "paper-figure";
 
+  const mediaFrame = document.createElement("div");
+  mediaFrame.className = "paper-figure__frame";
+
   if (figure.image) {
     const image = document.createElement("img");
     image.className = "paper-figure__media";
     image.src = figure.image;
     image.alt = `${paperTitle} ${figure.title}`;
     image.loading = "lazy";
-    frame.append(image);
+    mediaFrame.append(image);
   } else {
     const placeholder = document.createElement("div");
     placeholder.className = "paper-figure__placeholder";
     placeholder.textContent = String(figureIndex + 1).padStart(2, "0");
-    frame.append(placeholder);
+    mediaFrame.append(placeholder);
   }
 
   const caption = document.createElement("figcaption");
   caption.className = "paper-figure__caption";
   caption.textContent = figure.title;
-  frame.append(caption);
+  frame.append(mediaFrame, caption);
 
   return frame;
 }
@@ -166,6 +184,14 @@ function createResearchCard(paper, index) {
   authors.className = "paper-card__authors";
   authors.textContent = paper.authors;
 
+  const abstractLabel = document.createElement("p");
+  abstractLabel.className = "paper-card__abstract-label";
+  abstractLabel.textContent = "Abstract";
+
+  const abstract = document.createElement("p");
+  abstract.className = "paper-card__abstract";
+  abstract.textContent = paper.abstract ?? "";
+
   const meta = document.createElement("div");
   meta.className = "paper-card__meta";
 
@@ -177,15 +203,50 @@ function createResearchCard(paper, index) {
   year.className = "paper-chip";
   year.textContent = paper.year;
 
-  meta.append(journal, year);
-  intro.append(indexLabel, title, authors, meta);
+  const dataLink = document.createElement("a");
+  dataLink.className = "paper-chip paper-chip--link";
+  dataLink.href = paper.dataUrl;
+  dataLink.target = "_blank";
+  dataLink.rel = "noreferrer";
+  dataLink.textContent = "Data";
+  dataLink.setAttribute("aria-label", `${paper.title} data`);
+
+  const codeLink = document.createElement("a");
+  codeLink.className = "paper-chip paper-chip--link";
+  codeLink.href = paper.codeUrl;
+  codeLink.target = "_blank";
+  codeLink.rel = "noreferrer";
+  codeLink.textContent = "Code";
+  codeLink.setAttribute("aria-label", `${paper.title} code`);
+
+  const paperLink = document.createElement("a");
+  paperLink.className = "paper-chip paper-chip--link";
+  paperLink.href = paper.paperUrl;
+  paperLink.target = "_blank";
+  paperLink.rel = "noreferrer";
+  paperLink.textContent = "Link";
+  paperLink.setAttribute("aria-label", `${paper.title} paper link`);
+
+  const citationButton = document.createElement("button");
+  citationButton.type = "button";
+  citationButton.className = "paper-chip paper-chip--button";
+  citationButton.textContent = "Citation";
+  citationButton.dataset.defaultLabel = "Citation";
+  citationButton.dataset.bibtex = paper.bibtex;
+  citationButton.setAttribute("aria-label", `${paper.title} citation`);
+
+  meta.append(journal, year, paperLink, dataLink, codeLink, citationButton);
+  intro.append(indexLabel, title, authors, abstractLabel, abstract, meta);
 
   const figures = document.createElement("div");
   figures.className = "paper-card__figures";
 
-  paper.figures.forEach((figure, figureIndex) => {
-    figures.append(createFigurePanel(figure, paper.title, figureIndex));
-  });
+  const primaryFigure = paper.figures?.[0] ?? {
+    title: "Figure 01",
+    image: "",
+  };
+
+  figures.append(createFigurePanel(primaryFigure, paper.title, 0));
 
   card.append(intro, figures);
 
@@ -206,6 +267,180 @@ function renderResearch() {
   });
 
   list.replaceChildren(fragment);
+}
+
+function createAnalysisTag(label, value) {
+  const tag = document.createElement("div");
+  tag.className = "analysis-tag";
+
+  const tagLabel = document.createElement("span");
+  tagLabel.className = "analysis-tag__label";
+  tagLabel.textContent = label;
+
+  const tagValue = document.createElement("span");
+  tagValue.className = "analysis-tag__value";
+  tagValue.textContent = value;
+
+  tag.append(tagLabel, tagValue);
+  return tag;
+}
+
+function createAnalysisFigure(figure, summary, index) {
+  const frame = document.createElement("figure");
+  frame.className = "analysis-figure";
+
+  const mediaFrame = document.createElement("div");
+  mediaFrame.className = "analysis-figure__frame";
+
+  const image = document.createElement("img");
+  image.className = "analysis-figure__media";
+  image.src = figure.image;
+  image.alt = `${summary} figure ${index + 1}`;
+  image.loading = "lazy";
+  mediaFrame.append(image);
+
+  frame.append(mediaFrame);
+
+  if (figure.title) {
+    const caption = document.createElement("figcaption");
+    caption.className = "analysis-figure__caption";
+    caption.textContent = figure.title;
+    frame.append(caption);
+  }
+
+  return frame;
+}
+
+function createAnalysisCard(post, index) {
+  const card = document.createElement("article");
+  card.className = "analysis-card";
+  card.style.setProperty("--delay", `${index * 90}ms`);
+
+  const masthead = document.createElement("div");
+  masthead.className = "analysis-card__masthead";
+
+  const indexLabel = document.createElement("p");
+  indexLabel.className = "analysis-card__index";
+  indexLabel.textContent = `Post ${String(index + 1).padStart(2, "0")}`;
+
+  const tags = document.createElement("div");
+  tags.className = "analysis-card__tags";
+
+  const tagEntries = [
+    ["Date", post.date],
+    ["Country", post.country],
+    ["Feature", post.feature],
+  ].filter(([, value]) => Boolean(value));
+
+  tagEntries.forEach(([label, value]) => {
+    tags.append(createAnalysisTag(label, value));
+  });
+
+  masthead.append(indexLabel, tags);
+
+  const summary = document.createElement("h3");
+  summary.className = "analysis-card__summary";
+  summary.textContent = post.summary;
+
+  const details = document.createElement("p");
+  details.className = "analysis-card__details";
+  details.textContent = post.details;
+
+  card.append(masthead, summary, details);
+
+  const figures = (post.figures ?? []).filter((figure) => figure?.image).slice(0, 4);
+
+  if (figures.length) {
+    const gallery = document.createElement("div");
+    gallery.className = "analysis-card__figures";
+
+    figures.forEach((figure, figureIndex) => {
+      gallery.append(createAnalysisFigure(figure, post.summary, figureIndex));
+    });
+
+    card.append(gallery);
+  }
+
+  return card;
+}
+
+function renderAnalysis() {
+  const list = document.querySelector("#analysis-list");
+
+  if (!list) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  siteContent.analysis.posts.forEach((post, index) => {
+    fragment.append(createAnalysisCard(post, index));
+  });
+
+  list.replaceChildren(fragment);
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "absolute";
+  textarea.style.left = "-9999px";
+  document.body.append(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function setupResearchActions() {
+  const list = document.querySelector("#research-list");
+
+  if (!(list instanceof HTMLElement)) {
+    return;
+  }
+
+  list.addEventListener("click", async (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLButtonElement) || !target.classList.contains("paper-chip--button")) {
+      return;
+    }
+
+    const bibtex = target.dataset.bibtex;
+    const defaultLabel = target.dataset.defaultLabel ?? "Citation";
+
+    if (!bibtex) {
+      return;
+    }
+
+    const resetTimer = target.dataset.resetTimer;
+
+    if (resetTimer) {
+      window.clearTimeout(Number(resetTimer));
+    }
+
+    try {
+      await copyText(bibtex);
+      target.textContent = "Copied BibTeX";
+      target.classList.add("is-copied");
+    } catch {
+      target.textContent = "Copy Failed";
+      target.classList.remove("is-copied");
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      target.textContent = defaultLabel;
+      target.classList.remove("is-copied");
+      delete target.dataset.resetTimer;
+    }, 1800);
+
+    target.dataset.resetTimer = String(timeoutId);
+  });
 }
 
 function syncCommitteeBios() {
@@ -290,6 +525,7 @@ function setupReveal() {
     ...document.querySelectorAll(".reveal"),
     ...document.querySelectorAll(".member-card"),
     ...document.querySelectorAll(".paper-card"),
+    ...document.querySelectorAll(".analysis-card"),
   ];
 
   if (!targets.length) {
@@ -686,6 +922,8 @@ function mountPriceCanvas() {
 hydrateCopy();
 renderCommittee();
 renderResearch();
+renderAnalysis();
 setupCommitteeToggles();
+setupResearchActions();
 setupReveal();
 mountPriceCanvas();
