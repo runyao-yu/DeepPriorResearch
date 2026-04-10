@@ -345,10 +345,10 @@ a {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  min-height: calc(1em * 1.75 * 4);
-  max-height: calc(1em * 1.75 * 4);
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  min-height: calc(1em * 1.75 * 6);
+  max-height: calc(1em * 1.75 * 6);
 }
 
 .member-card.is-expanded .member-card__bio {
