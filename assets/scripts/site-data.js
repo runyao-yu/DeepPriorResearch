@@ -25,10 +25,10 @@ export const siteContent = {
         image: "",
       },
       {
-        name: "Prof. ",
+        name: "Prof. Jochen L. Cremer",
         role: "Committee Chair",
-        initials: "DWB",
-        bio: "to be filled.",
+        initials: "JLC",
+        bio: "Jochen advances AI-driven power system operation across reliability, security, and resilience, with a focus on machine learning, physics-informed methods, and data-driven control for complex energy systems. His academic path includes an Associate Professorship at TU Delft and a PhD from Imperial College London, complemented by earlier research experience at Carnegie Mellon University and MIT, as well as multidisciplinary training at RWTH Aachen University. Alongside academia, he serves as Principal Scientist at the Austrian Institute of Technology and co-director of Student Energy. At DeepPrior, Jochen serves as Committee Chair, supporting research at the intersection of AI and energy systems.",
         image: "",
       },
       {
@@ -41,7 +41,7 @@ export const siteContent = {
       {
         name: "Prof. ",
         role: "Committee Chair",
-        initials: "JLC",
+        initials: "DWB",
         bio: "to be filled.",
         image: "",
       },
