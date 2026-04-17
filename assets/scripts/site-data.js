@@ -54,17 +54,24 @@ export const siteContent = {
         image: "",
       },
       {
+        name: "Dr. Zihao Zhou",
+        role: "Member",
+        initials: "ZZ",
+        bio: "Zihao advances AI for battery aging, with a focus on reliability modeling, early-life SOH prediction, and hybrid electrochemical-AI methods for lithium-ion batteries. His academic path includes a PhD in Electrical and Electronics Engineering from the University of Oxford and an MSc in the same field from Tsinghua University, providing a strong foundation in battery systems and intelligent modeling. Alongside academia, he serves as Senior Reliability Modeling and Optimization Engineer at CATL, with industrial experience spanning Huawei and Tencent. At DeepPrior, Zihao contributes to research at the intersection of AI, battery aging, and next-generation energy technologies.",
+        image: "",
+      },
+      {
         name: "Dr. Jochen Stiasny",
         role: "Member",
         initials: "JS",
-        bio: "Postdoc at TU Delft, PhD from DTU, and MSc from ETH Zurich, with exchange experience at Washington University and Lund University; Team Lead at AMZ Racing and industrial experience at Secure Switzerland AG.",
+        bio: "Jochen advances AI for power systems, with a focus on scientific machine learning, physics-informed neural networks, and data-driven methods for energy system modeling and control. His academic path includes a PhD in Wind and Energy Systems from DTU, complemented by postdoctoral research at TU Delft, an external research stay at the University of Washington, and earlier engineering training across ETH Zurich, Lund University, and Technische Universität Darmstadt. Alongside academia, he brings hands-on engineering experience from AMZ Racing and Adaptricity. At DeepPrior, Jochen contributes to research at the intersection of AI, power systems, and next-generation energy infrastructure.",
         image: "",
       },
       {
         name: "Dr. Andreas Billert",
         role: "Member",
         initials: "AB",
-        bio: "Industrial PhD from BMW and KIT, MSc from TU Munich, with exchange experience at SJTU and UC Berkeley; Cluster Lead at BMW, with industrial experience at Siemens.",
+        bio: "Andreas advances AI for battery systems, with a focus on machine learning, charging, and software function development for high-voltage batteries. His academic path includes doctoral research in batteries and machine learning in cooperation between BMW and KIT, complemented by an MSc in Automotive Technology and a BSc in Engineering Science from the Technical University of Munich, as well as study-abroad experience at Shanghai Jiao Tong University and UC Berkeley. Alongside academia, he serves as Cluster Leader at BMW, where he leads charging and digitalization for battery software function development, with earlier experience spanning battery modeling, automotive research, and engineering practice. At DeepPrior, Andreas contributes to research at the intersection of AI, battery intelligence, and next-generation mobility systems.",
         image: "",
       },
       {
