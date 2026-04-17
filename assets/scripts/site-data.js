@@ -25,19 +25,20 @@ export const siteContent = {
         image: "",
       },
       {
+        name: "Prof. Peter Palensky",
+        role: "Committee Chair",
+        initials: "PP",
+        bio: "Peter advances intelligent power systems research across grid digitalization, integrated energy systems, and cyber-physical energy infrastructure, with a focus on modeling and simulation, digital twins, automation, and secure operation of future power grids. His academic path includes a full Professorship at TU Delft and doctoral training at Vienna University of Technology, complemented by leadership and research roles at Lawrence Berkeley National Laboratory, the University of Pretoria, and the Austrian Institute of Technology. Alongside academia, he has built and led research with strong industrial relevance, spanning energy automation, smart cities, and sustainable buildings. At DeepPrior, Peter brings senior leadership in intelligent power grids, digital twins, and large-scale energy system innovation.",
+        image: "",
+      },
+      {
         name: "Prof. Jochen L. Cremer",
         role: "Committee Chair",
         initials: "JLC",
         bio: "Jochen advances AI-driven power system operation across reliability, security, and resilience, with a focus on machine learning, physics-informed methods, and data-driven control for complex energy systems. His academic path includes an Associate Professorship at TU Delft and a PhD from Imperial College London, complemented by earlier research experience at Carnegie Mellon University and MIT, as well as multidisciplinary training at RWTH Aachen University. Alongside academia, he serves as Principal Scientist at the Austrian Institute of Technology and co-director of Student Energy. At DeepPrior, Jochen serves as Committee Chair, supporting research at the intersection of AI and energy systems.",
         image: "",
       },
-      {
-        name: "Prof. ",
-        role: "Committee Chair",
-        initials: "PP",
-        bio: "to be filled.",
-        image: "",
-      },
+
       {
         name: "Prof. ",
         role: "Committee Chair",
@@ -70,7 +71,7 @@ export const siteContent = {
         name: "Yuchen Tao",
         role: "Member",
         initials: "YT",
-        bio: "MSc from RWTH Aachen and BSc from SJTU; Senior Deep Learning Engineer at Hyundai MOBIS, with industrial experience at Bosch (BCAI), Volkswagen, and Michelin.",
+        bio: "Yuchen advances AI for automated driving, with a focus on perception, intelligent systems, and real-world deployment of advanced driving technologies. His academic path includes studies at RWTH Aachen University and Shanghai Jiao Tong University, providing a strong foundation across engineering and applied AI. Alongside academia, he serves as Senior AI Engineer, with industrial experience spanning Hyundai, Bosch, and Volkswagen. At DeepPrior, Yuchen contributes to advanced software development for energy trading.",
         image: "",
       },
       {
@@ -78,6 +79,13 @@ export const siteContent = {
         role: "Member",
         initials: "YZ",
         bio: "PhD from Max Planck Institute and University of Stuttgart, MSc from TU Munich, with visiting position at Oxford University; Industrial experience at Bosch (BCAI).",
+        image: "",
+      },
+      {
+        name: "Lianlian Qi",
+        role: "Member",
+        initials: "LQ",
+        bio: "Lianlian advances AI for intelligent urban design, with a focus on deep learning, human-centered systems, and data-driven approaches for shaping more adaptive urban environments. Her academic path includes doctoral research at the Technical University of Munich and Austrian Institute of Technology, complemented by an MSc in Artificial Intelligence from the University of Edinburgh. Alongside academia, her industrial experience spans leading technology companies including ByteDance and DiDi. At DeepPrior, Lianlian contributes to research at the intersection of AI, design, and real-world urban innovation.",
         image: "",
       },
       {
