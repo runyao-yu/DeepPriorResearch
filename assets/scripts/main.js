@@ -1,7 +1,10 @@
-﻿import { siteContent } from "./site-data.js";
+import { siteContent } from "./site-data.js";
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DEFAULT_VISIBLE_COMMITTEE_COUNT = 8;
+const DEFAULT_VISIBLE_RESEARCH_COUNT = 4;
+const DEFAULT_VISIBLE_ANALYSIS_COUNT = 4;
+const HERO_VIDEO_SOURCES = ["Video/1.mp4", "Video/2.mp4", "Video/3.mp4"];
 
 function hydrateCopy() {
   document.querySelectorAll("[data-site-name]").forEach((node) => {
@@ -30,7 +33,14 @@ function hydrateCopy() {
   }
 
   if (heroHeadline) {
-    heroHeadline.textContent = siteContent.brand.heroHeadline;
+    heroHeadline.replaceChildren(
+      ...siteContent.brand.heroHeadline.split(" ").map((word) => {
+        const line = document.createElement("span");
+        line.className = "hero__headline-line";
+        line.textContent = word;
+        return line;
+      }),
+    );
   }
 
   if (eyebrow) {
@@ -89,6 +99,127 @@ function hydrateCopy() {
     aboutVisionText.textContent = siteContent.about.visionText;
   }
 }
+
+function mountHeroVideoPlaylist() {
+  const video = document.querySelector("[data-hero-video]");
+
+  if (!(video instanceof HTMLVideoElement) || HERO_VIDEO_SOURCES.length === 0) {
+    return;
+  }
+
+  let currentIndex = 0;
+
+  const playCurrentVideo = () => {
+    if (document.hidden) {
+      return;
+    }
+
+    const playback = video.play();
+
+    if (playback && typeof playback.catch === "function") {
+      playback.catch(() => {});
+    }
+  };
+
+  const updateSource = (nextIndex) => {
+    currentIndex = (nextIndex + HERO_VIDEO_SOURCES.length) % HERO_VIDEO_SOURCES.length;
+    video.src = HERO_VIDEO_SOURCES[currentIndex];
+    video.load();
+    playCurrentVideo();
+  };
+
+  video.addEventListener("ended", () => {
+    updateSource(currentIndex + 1);
+  });
+
+  video.addEventListener("error", () => {
+    updateSource(currentIndex + 1);
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      video.pause();
+      return;
+    }
+
+    playCurrentVideo();
+  });
+
+  updateSource(0);
+}
+function renderFooterDetails() {
+  const footer = siteContent.footer;
+
+  if (!footer) {
+    return;
+  }
+
+  const locationTitle = document.querySelector("[data-footer-location-title]");
+  const contactTitle = document.querySelector("[data-footer-contact-title]");
+  const socialTitle = document.querySelector("[data-footer-social-title]");
+  const locationStack = document.querySelector("[data-footer-location]");
+  const contactStack = document.querySelector("[data-footer-contact]");
+  const socialStack = document.querySelector("[data-footer-social]");
+
+  if (locationTitle) {
+    locationTitle.textContent = footer.locationTitle;
+  }
+
+  if (contactTitle) {
+    contactTitle.textContent = footer.contactTitle;
+  }
+
+  if (socialTitle) {
+    socialTitle.textContent = footer.socialTitle;
+  }
+
+  if (locationStack instanceof HTMLElement) {
+    const fragment = document.createDocumentFragment();
+
+    (footer.locationLines ?? []).filter(Boolean).forEach((line) => {
+      const item = document.createElement("p");
+      item.className = "site-footer__item";
+      item.textContent = line;
+      fragment.append(item);
+    });
+
+    locationStack.replaceChildren(fragment);
+  }
+
+  if (contactStack instanceof HTMLElement) {
+    const fragment = document.createDocumentFragment();
+
+    (footer.contactLines ?? []).filter(Boolean).forEach((line) => {
+      const item = document.createElement("p");
+      item.className = "site-footer__item";
+      item.textContent = line;
+      fragment.append(item);
+    });
+
+    contactStack.replaceChildren(fragment);
+  }
+
+  if (socialStack instanceof HTMLElement) {
+    const fragment = document.createDocumentFragment();
+
+    (footer.socials ?? []).filter((social) => social?.label).forEach((social) => {
+      const item = social.href ? document.createElement("a") : document.createElement("span");
+      item.className = social.href ? "site-footer__link" : "site-footer__item";
+      item.textContent = social.label;
+
+      if (item instanceof HTMLAnchorElement) {
+        item.href = social.href;
+        item.target = "_blank";
+        item.rel = "noreferrer";
+      }
+
+      fragment.append(item);
+    });
+
+    socialStack.replaceChildren(fragment);
+  }
+}
+
 function createMemberUniversityTag(university) {
   const tag = document.createElement("span");
   tag.className = "member-card__university";
@@ -376,10 +507,17 @@ function renderResearch() {
   const fragment = document.createDocumentFragment();
 
   siteContent.research.papers.forEach((paper, index) => {
-    fragment.append(createResearchCard(paper, index));
+    const card = createResearchCard(paper, index);
+
+    if (index >= DEFAULT_VISIBLE_RESEARCH_COUNT) {
+      card.dataset.overflow = "true";
+    }
+
+    fragment.append(card);
   });
 
   list.replaceChildren(fragment);
+  syncResearchCollection();
 }
 
 function createAnalysisTag(label, value) {
@@ -487,10 +625,17 @@ function renderAnalysis() {
   const fragment = document.createDocumentFragment();
 
   siteContent.analysis.posts.forEach((post, index) => {
-    fragment.append(createAnalysisCard(post, index));
+    const card = createAnalysisCard(post, index);
+
+    if (index >= DEFAULT_VISIBLE_ANALYSIS_COUNT) {
+      card.dataset.overflow = "true";
+    }
+
+    fragment.append(card);
   });
 
   list.replaceChildren(fragment);
+  syncAnalysisCollection();
 }
 
 function syncCommitteeCollection() {
@@ -549,6 +694,120 @@ function setupCommitteeCollectionToggle() {
     }
 
     requestAnimationFrame(syncCommitteeBios);
+  });
+}
+
+function syncResearchCollection() {
+  const section = document.querySelector(".research");
+  const list = document.querySelector("#research-list");
+  const button = document.querySelector("[data-research-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(list instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  const cards = [...list.querySelectorAll(".paper-card")];
+  const hasOverflow = cards.length > DEFAULT_VISIBLE_RESEARCH_COUNT;
+
+  if (!hasOverflow) {
+    section.classList.add("is-expanded");
+    button.hidden = true;
+    button.textContent = "View all papers";
+    button.setAttribute("aria-expanded", "true");
+    return;
+  }
+
+  button.hidden = false;
+
+  const expanded = section.classList.contains("is-expanded");
+  button.textContent = expanded ? "Show fewer" : "View all papers";
+  button.setAttribute("aria-expanded", expanded ? "true" : "false");
+}
+
+function setupResearchCollectionToggle() {
+  const section = document.querySelector(".research");
+  const list = document.querySelector("#research-list");
+  const button = document.querySelector("[data-research-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(list instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  syncResearchCollection();
+
+  button.addEventListener("click", () => {
+    const expanded = section.classList.toggle("is-expanded");
+
+    button.textContent = expanded ? "Show fewer" : "View all papers";
+    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+    if (expanded) {
+      [...list.querySelectorAll(".paper-card")]
+        .slice(DEFAULT_VISIBLE_RESEARCH_COUNT)
+        .forEach((card) => card.classList.add("is-visible"));
+    } else {
+      section.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+  });
+}
+
+function syncAnalysisCollection() {
+  const section = document.querySelector(".analysis");
+  const list = document.querySelector("#analysis-list");
+  const button = document.querySelector("[data-analysis-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(list instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  const cards = [...list.querySelectorAll(".analysis-card")];
+  const hasOverflow = cards.length > DEFAULT_VISIBLE_ANALYSIS_COUNT;
+
+  if (!hasOverflow) {
+    section.classList.add("is-expanded");
+    button.hidden = true;
+    button.textContent = "View all posts";
+    button.setAttribute("aria-expanded", "true");
+    return;
+  }
+
+  button.hidden = false;
+
+  const expanded = section.classList.contains("is-expanded");
+  button.textContent = expanded ? "Show fewer" : "View all posts";
+  button.setAttribute("aria-expanded", expanded ? "true" : "false");
+}
+
+function setupAnalysisCollectionToggle() {
+  const section = document.querySelector(".analysis");
+  const list = document.querySelector("#analysis-list");
+  const button = document.querySelector("[data-analysis-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(list instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  syncAnalysisCollection();
+
+  button.addEventListener("click", () => {
+    const expanded = section.classList.toggle("is-expanded");
+
+    button.textContent = expanded ? "Show fewer" : "View all posts";
+    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+    if (expanded) {
+      [...list.querySelectorAll(".analysis-card")]
+        .slice(DEFAULT_VISIBLE_ANALYSIS_COUNT)
+        .forEach((card) => card.classList.add("is-visible"));
+    } else {
+      section.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }
   });
 }
 
@@ -804,281 +1063,233 @@ function mountPriceCanvas() {
     width: 0,
     height: 0,
     dpr: 1,
-    stars: [],
-    dust: [],
-    sampleXs: new Float32Array(0),
-    sampleRatios: new Float32Array(0),
-    seriesYs: [],
-    backdropGradient: null,
     frameId: 0,
     heroInView: true,
+    phase: 0,
+    increments: new Float32Array(0),
+    samples: [],
+    scaleMin: 0,
+    scaleMax: 1,
+    pointsPerFrame: 3,
   };
 
-  const series = [
-    {
-      base: 0.64,
-      amplitude: 0.11,
-      swing: 10,
-      micro: 34,
-      speed: 0.00024,
-      pulse: 0.12,
-      width: 2.4,
-      color: "rgba(255, 255, 255, 0.96)",
-      glow: "rgba(255, 255, 255, 0.22)",
-      phase: 0.35,
-    },
-    {
-      base: 0.54,
-      amplitude: 0.085,
-      swing: 8.5,
-      micro: 26,
-      speed: 0.00018,
-      pulse: 0.085,
-      width: 1.6,
-      color: "rgba(255, 255, 255, 0.38)",
-      glow: "rgba(255, 255, 255, 0.12)",
-      phase: 1.65,
-    },
-    {
-      base: 0.46,
-      amplitude: 0.07,
-      swing: 6.5,
-      micro: 22,
-      speed: 0.00012,
-      pulse: 0.06,
-      width: 1.15,
-      color: "rgba(255, 255, 255, 0.2)",
-      glow: "rgba(255, 255, 255, 0.08)",
-      phase: 3.1,
-    },
-    {
-      base: 0.38,
-      amplitude: 0.052,
-      swing: 5.4,
-      micro: 18,
-      speed: 0.00009,
-      pulse: 0.04,
-      width: 0.85,
-      color: "rgba(255, 255, 255, 0.11)",
-      glow: "rgba(255, 255, 255, 0.04)",
-      phase: 4.35,
-    },
-  ];
+  function createFractalTile(length, octaves) {
+    const values = new Float32Array(length);
+    const temp = new Float32Array(length);
 
-  function buildStars() {
-    const count = Math.max(28, Math.floor(state.width / 18));
-    const dustCount = Math.max(16, Math.floor(state.width / 38));
+    for (let octave = 0; octave < octaves.length; octave += 1) {
+      temp.fill(0);
+      const { step, amplitude } = octaves[octave];
 
-    state.stars = Array.from({ length: count }, () => ({
-      x: Math.random() * state.width,
-      y: Math.random() * state.height,
-      radius: Math.random() * 1.5 + 0.2,
-      alpha: Math.random() * 0.5 + 0.08,
-      speed: Math.random() * 0.05 + 0.018,
-    }));
+      for (let anchor = 0; anchor < length + step; anchor += step) {
+        temp[Math.min(anchor, length - 1)] = (Math.random() * 2 - 1) * amplitude;
+      }
 
-    state.dust = Array.from({ length: dustCount }, () => ({
-      x: state.width * (0.28 + Math.random() * 0.44),
-      y: state.height * (0.17 + Math.random() * 0.26),
-      radius: Math.random() * 1.1 + 0.18,
-      alpha: Math.random() * 0.18 + 0.03,
-      driftX: Math.random() * 0.0007 + 0.00025,
-      driftY: Math.random() * 0.0006 + 0.00018,
-      swing: Math.random() * 16 + 6,
-    }));
-  }
+      for (let index = 0; index < length; index += step) {
+        const startIndex = index;
+        const endIndex = Math.min(index + step, length - 1);
+        const start = temp[startIndex];
+        const end = temp[endIndex];
+        const span = Math.max(1, endIndex - startIndex);
 
-  function buildSeriesBuffers() {
-    const sampleCount = Math.floor((state.width + 16) / 14) + 1;
-    state.sampleXs = new Float32Array(sampleCount);
-    state.sampleRatios = new Float32Array(sampleCount);
-    state.seriesYs = series.map(() => new Float32Array(sampleCount));
+        for (let position = 0; position <= span && startIndex + position < length; position += 1) {
+          const ratio = position / span;
+          temp[startIndex + position] = start + (end - start) * ratio;
+        }
+      }
 
-    for (let index = 0; index < sampleCount; index += 1) {
-      const x = index * 14;
-      state.sampleXs[index] = x;
-      state.sampleRatios[index] = state.width ? x / state.width : 0;
+      for (let index = 0; index < length; index += 1) {
+        values[index] += temp[index];
+      }
     }
+
+    return values;
   }
 
-  function buildBackdropGradient() {
-    const radial = context.createRadialGradient(
-      state.width * 0.5,
-      state.height * 0.38,
-      0,
-      state.width * 0.5,
-      state.height * 0.38,
-      state.width * 0.5,
-    );
-    radial.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-    radial.addColorStop(1, "rgba(255, 255, 255, 0)");
-    state.backdropGradient = radial;
+  function buildGenerator() {
+    const tileLength = 4096;
+    const rough = createFractalTile(tileLength, [
+      { step: 512, amplitude: 0.22 },
+      { step: 256, amplitude: 0.15 },
+      { step: 128, amplitude: 0.1 },
+      { step: 64, amplitude: 0.065 },
+      { step: 32, amplitude: 0.035 },
+    ]);
+    const micro = createFractalTile(tileLength, [
+      { step: 96, amplitude: 0.028 },
+      { step: 48, amplitude: 0.019 },
+      { step: 24, amplitude: 0.012 },
+      { step: 12, amplitude: 0.007 },
+    ]);
+
+    const increments = new Float32Array(tileLength);
+
+    for (let index = 0; index < tileLength; index += 1) {
+      const longWave = Math.sin(index * 0.011) * 0.036 + Math.sin(index * 0.0037) * 0.042;
+      const fastWave = Math.sin(index * 0.072) * 0.012;
+      increments[index] = Math.max(0.016, 0.12 + rough[index] * 0.09 + micro[index] * 0.05 + longWave + fastWave);
+    }
+
+    state.increments = increments;
+  }
+
+  function nextValue(previous) {
+    const index = state.phase % state.increments.length;
+    const increment = state.increments[index];
+    const curvature = 0.0042 + (Math.sin(state.phase * 0.014) + 1) * 0.0018;
+    state.phase = (state.phase + 1) % state.increments.length;
+    return previous + increment + curvature;
+  }
+
+  function seedSeries() {
+    state.samples = [];
+    let value = 0;
+    const initialCount = 240;
+
+    for (let index = 0; index < initialCount; index += 1) {
+      value = nextValue(value);
+      state.samples.push(value);
+    }
+
+    state.scaleMin = state.samples[0] ?? 0;
+    state.scaleMax = state.samples[state.samples.length - 1] ?? 1;
+  }
+
+  function compressHistory() {
+    const source = state.samples;
+    const targetLength = Math.max(1400, Math.floor(source.length * 0.76));
+    const compressed = new Array(targetLength);
+
+    for (let index = 0; index < targetLength; index += 1) {
+      const position = (index / Math.max(1, targetLength - 1)) * Math.max(0, source.length - 1);
+      const left = Math.floor(position);
+      const right = Math.min(source.length - 1, Math.ceil(position));
+      const ratio = position - left;
+      compressed[index] = source[left] + (source[right] - source[left]) * ratio;
+    }
+
+    state.samples = compressed;
   }
 
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
-    state.width = bounds.width || window.innerWidth;
-    state.height = bounds.height || window.innerHeight;
+    state.width = Math.max(320, Math.round(bounds.width));
+    state.height = Math.max(320, Math.round(bounds.height));
     state.dpr = Math.min(window.devicePixelRatio || 1, 2);
-
     canvas.width = Math.round(state.width * state.dpr);
     canvas.height = Math.round(state.height * state.dpr);
     context.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
-
-    buildStars();
-    buildSeriesBuffers();
-    buildBackdropGradient();
-    drawFrame(performance.now());
+    drawFrame();
   }
 
-  function drawBackdrop() {
-    context.clearRect(0, 0, state.width, state.height);
+  function stepSeries() {
+    for (let step = 0; step < state.pointsPerFrame; step += 1) {
+      const last = state.samples[state.samples.length - 1] ?? 0;
+      state.samples.push(nextValue(last));
+    }
 
-    context.fillStyle = "#020202";
-    context.fillRect(0, 0, state.width, state.height);
-
-    context.fillStyle = state.backdropGradient ?? "#020202";
-    context.fillRect(0, 0, state.width, state.height);
-  }
-
-  function drawStars(time) {
-    context.save();
-
-    state.stars.forEach((star) => {
-      const travel = (star.x - time * star.speed) % (state.width + 40);
-      const x = travel < -20 ? travel + state.width + 60 : travel + 20;
-      const alpha = star.alpha * (0.68 + 0.32 * Math.sin(time * 0.002 + star.y));
-
-      context.beginPath();
-      context.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-      context.arc(x, star.y, star.radius, 0, Math.PI * 2);
-      context.fill();
-    });
-
-    context.restore();
-  }
-
-  function drawDust(time) {
-    context.save();
-
-    state.dust.forEach((particle) => {
-      const x = particle.x + Math.sin(time * particle.driftX + particle.y) * particle.swing;
-      const y =
-        particle.y + Math.cos(time * particle.driftY + particle.x) * (particle.swing * 0.45);
-      const alpha = particle.alpha * (0.7 + 0.3 * Math.sin(time * 0.0018 + particle.x));
-
-      context.beginPath();
-      context.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-      context.arc(x, y, particle.radius, 0, Math.PI * 2);
-      context.fill();
-    });
-
-    context.restore();
-  }
-
-  function drawSweep(time) {
-    const sweepX = (time * 0.06) % (state.width * 1.25) - state.width * 0.2;
-    const gradient = context.createLinearGradient(sweepX, 0, sweepX + 180, 0);
-    gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
-    gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.05)");
-    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, state.width, state.height);
-  }
-
-  function getSeriesY(line, ratio, time) {
-    const primaryWave = Math.sin(ratio * line.swing + time * line.speed + line.phase) * line.amplitude;
-    const microWave =
-      Math.sin(ratio * line.micro + time * line.speed * 3.7 + line.phase * 1.85) * 0.018;
-    const drift =
-      Math.cos(ratio * 14 + time * line.speed * 1.3 + line.phase * 1.2) * 0.015;
-    const pulseCenter = (time * line.speed * 0.09 + line.phase * 0.11) % 1;
-    const pulse = Math.exp(-((ratio - pulseCenter) ** 2) / 0.0024) * line.pulse;
-
-    return state.height * (line.base - primaryWave - microWave - drift - pulse);
-  }
-
-  function updateSeriesSamples(time) {
-    for (let lineIndex = 0; lineIndex < series.length; lineIndex += 1) {
-      const line = series[lineIndex];
-      const yValues = state.seriesYs[lineIndex];
-
-      for (let pointIndex = 0; pointIndex < state.sampleXs.length; pointIndex += 1) {
-        yValues[pointIndex] = getSeriesY(line, state.sampleRatios[pointIndex], time);
-      }
+    if (state.samples.length > 2800) {
+      compressHistory();
     }
   }
 
-  function drawSeries(line, yValues, index) {
-    if (!yValues.length) {
-      return;
+  function updateScale() {
+    const min = state.samples[0] ?? 0;
+    const max = state.samples[state.samples.length - 1] ?? 1;
+    const range = Math.max(1, max - min);
+    const targetMin = min - range * 0.08;
+    const targetMax = max + range * 0.12;
+
+    state.scaleMin += (targetMin - state.scaleMin) * 0.085;
+    state.scaleMax += (targetMax - state.scaleMax) * 0.085;
+  }
+
+  function getX(index) {
+    if (state.samples.length <= 1) {
+      return 0;
     }
 
-    if (index === 0) {
-      const fill = context.createLinearGradient(0, state.height * 0.24, 0, state.height);
-      fill.addColorStop(0, "rgba(255, 255, 255, 0.12)");
-      fill.addColorStop(1, "rgba(255, 255, 255, 0)");
+    return (state.width / (state.samples.length - 1)) * index;
+  }
 
-      context.beginPath();
-      context.moveTo(state.sampleXs[0], yValues[0]);
-      for (let index = 1; index < state.sampleXs.length; index += 1) {
-        context.lineTo(state.sampleXs[index], yValues[index]);
-      }
-      context.lineTo(state.width, state.height + 40);
-      context.lineTo(0, state.height + 40);
-      context.closePath();
-      context.fillStyle = fill;
-      context.fill();
-    }
+  function getY(value) {
+    const domain = Math.max(1, state.scaleMax - state.scaleMin);
+    const ratio = (value - state.scaleMin) / domain;
+    const top = state.height * 0.08;
+    const bottom = state.height * 0.9;
+    return bottom - ratio * (bottom - top);
+  }
 
-    context.save();
+  function traceSeries(offsetY = 0) {
     context.beginPath();
-    context.moveTo(state.sampleXs[0], yValues[0]);
-    for (let index = 1; index < state.sampleXs.length; index += 1) {
-      context.lineTo(state.sampleXs[index], yValues[index]);
+
+    for (let index = 0; index < state.samples.length; index += 1) {
+      const x = getX(index);
+      const y = getY(state.samples[index]) + offsetY;
+
+      if (index === 0) {
+        context.moveTo(x, y);
+        continue;
+      }
+
+      const previousX = getX(index - 1);
+      const previousY = getY(state.samples[index - 1]) + offsetY;
+      const controlX = (previousX + x) * 0.5;
+      context.quadraticCurveTo(controlX, previousY, x, y);
     }
-    context.lineWidth = line.width;
-    context.strokeStyle = line.color;
-    context.shadowBlur = 24;
-    context.shadowColor = line.glow;
+  }
+
+  function drawSeries(alpha, width, blur, offsetY = 0) {
+    context.save();
+    traceSeries(offsetY);
+    context.lineWidth = width;
+    context.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+    context.shadowBlur = blur;
+    context.shadowColor = `rgba(255, 255, 255, ${Math.min(0.3, alpha * 0.42)})`;
+    context.lineCap = "round";
+    context.lineJoin = "round";
     context.stroke();
     context.restore();
   }
 
-  function drawMarker(line, time) {
-    const ratio = (time * line.speed * 0.09 + line.phase * 0.11) % 1;
-    const x = state.width * ratio;
-    const y = getSeriesY(line, ratio, time);
+  function drawBackdrop() {
+    context.clearRect(0, 0, state.width, state.height);
+    const wash = context.createLinearGradient(0, 0, state.width, 0);
+    wash.addColorStop(0, "rgba(255, 255, 255, 0)");
+    wash.addColorStop(0.18, "rgba(255, 255, 255, 0.015)");
+    wash.addColorStop(0.72, "rgba(255, 255, 255, 0.03)");
+    wash.addColorStop(1, "rgba(255, 255, 255, 0)");
+    context.fillStyle = wash;
+    context.fillRect(0, 0, state.width, state.height);
+  }
+
+  function drawTip() {
+    const x = getX(state.samples.length - 1);
+    const y = getY(state.samples[state.samples.length - 1]);
 
     context.save();
     context.beginPath();
     context.fillStyle = "rgba(255, 255, 255, 0.95)";
-    context.shadowBlur = 28;
+    context.shadowBlur = 22;
     context.shadowColor = "rgba(255, 255, 255, 0.3)";
-    context.arc(x, y, 3.2, 0, Math.PI * 2);
+    context.arc(x, y, 4.6, 0, Math.PI * 2);
     context.fill();
     context.restore();
   }
 
-  function drawFrame(time) {
-    const normalizedTime = time % 600000;
-
+  function drawFrame() {
+    updateScale();
     drawBackdrop();
-    drawStars(normalizedTime);
-    drawDust(normalizedTime);
-    drawSweep(normalizedTime);
-    updateSeriesSamples(normalizedTime);
-
-    series.forEach((line, index) => {
-      drawSeries(line, state.seriesYs[index], index);
-    });
-
-    drawMarker(series[0], normalizedTime);
+    drawSeries(0.08, 28, 0, 14);
+    drawSeries(0.16, 18, 10, 6);
+    drawSeries(0.96, 8.6, 16, 0);
+    drawSeries(0.12, 3.2, 6, -9);
+    drawTip();
   }
 
-  function animate(time) {
-    drawFrame(time);
+  function animate() {
+    stepSeries();
+    drawFrame();
     state.frameId = window.requestAnimationFrame(animate);
   }
 
@@ -1100,10 +1311,6 @@ function mountPriceCanvas() {
   }
 
   function handleVisibilityChange() {
-    if (prefersReducedMotion) {
-      return;
-    }
-
     if (document.hidden) {
       stopAnimation();
       return;
@@ -1124,37 +1331,38 @@ function mountPriceCanvas() {
         state.heroInView = entry?.isIntersecting ?? true;
 
         if (state.heroInView) {
-          drawFrame(performance.now());
+          drawFrame();
           startAnimation();
           return;
         }
 
         stopAnimation();
       },
-      {
-        threshold: 0.02,
-      },
+      { threshold: 0.02 },
     );
 
     heroObserver.observe(heroSection);
   }
 
+  buildGenerator();
+  seedSeries();
   resizeCanvas();
 
-  if (prefersReducedMotion) {
-    drawFrame(performance.now());
-    return;
+  if (!prefersReducedMotion) {
+    startAnimation();
   }
-
-  startAnimation();
 }
 
+mountHeroVideoPlaylist();
 hydrateCopy();
+renderFooterDetails();
 renderCommittee();
 renderResearch();
 renderAnalysis();
 setupCommitteeToggles();
 setupCommitteeCollectionToggle();
+setupResearchCollectionToggle();
+setupAnalysisCollectionToggle();
 setupCommitteeLinkActions();
 setupResearchActions();
 setupReveal();

@@ -3,7 +3,7 @@
     name: "DeepPrior",
     tagline: "Quantitative Research in Energy Markets and Power Systems",
     heroIntro:
-      "We are a quantitative energy research organization developing accurate AI forecasting models for energy markets and power systems, helping both academic and industry partners turn advanced research into real-world impact.",
+      "We are a quantitative research organization developing advanced AI forecasting models for energy markets and power systems, helping both academic and industry partners turn research into real-world impact.",
     heroHeadline: "Quantitative Energy Research",
     footerNote: "A Quantitative Energy Research Organization",
   },
@@ -11,7 +11,7 @@
     eyebrow: "Committee",
     title: "DeepPrior",
     description:
-      "Deep learning meets prior knowledge for quantitative energy forecasting.",
+      "Deep learning meets prior knowledge.",
     members: [
       {
         name: "Runyao Yu",
@@ -344,6 +344,53 @@
         ],
       },
 
+      {
+        title: "Placeholder Paper",
+        authors: "Author Name, Author Name, Author Name",
+        abstract: "Add the abstract here. Keep it concise so the card stays readable while still describing the main contribution.",
+        journal: "Journal / Conference Name",
+        year: "2025",
+        paperUrl: "https://github.com/",
+        dataUrl: "https://github.com/",
+        codeUrl: "https://github.com/",
+        bibtex: `@article{deepprior2025placeholder2,
+  title   = {Placeholder Paper Two},
+  author  = {Author, Name and Author, Name and Author, Name},
+  journal = {Journal / Conference Name},
+  year    = {2025}
+}`,
+        figures: [
+          {
+            title: "Structure of Placeholder",
+            image: "",
+          }
+        ],
+      },
+
+
+      {
+        title: "Placeholder Paper",
+        authors: "Author Name, Author Name, Author Name",
+        abstract: "Add the abstract here. Keep it concise so the card stays readable while still describing the main contribution.",
+        journal: "Journal / Conference Name",
+        year: "2025",
+        paperUrl: "https://github.com/",
+        dataUrl: "https://github.com/",
+        codeUrl: "https://github.com/",
+        bibtex: `@article{deepprior2025placeholder2,
+  title   = {Placeholder Paper Two},
+  author  = {Author, Name and Author, Name and Author, Name},
+  journal = {Journal / Conference Name},
+  year    = {2025}
+}`,
+        figures: [
+          {
+            title: "Structure of Placeholder",
+            image: "",
+          }
+        ],
+      },
+
     ],
   },
   analysis: {
@@ -375,6 +422,7 @@
           },
         ],
       },
+
       {
         date: "04 Apr 2026",
         country: "Austria",
@@ -385,16 +433,74 @@
           "Keep the top summary crisp and directional, then use this body copy for the fuller interpretation: what changed, why it mattered, and which feature or regime shift the figures below are meant to support.",
         figures: [],
       },
+
+      {
+        date: "03 Apr 2026",
+        country: "Germany",
+        feature: "Solar",
+        summary:
+          "Midday solar output capped intraday volatility, but the late ramp still widened balancing pressure into the close.",
+        details:
+          "Keep the top summary crisp and directional, then use this body copy for the fuller interpretation: what changed, why it mattered, and which feature or regime shift the figures below are meant to support.",
+        figures: [],
+      },
+
+      {
+        date: "04 Mar 2026",
+        country: "Germany",
+        feature: "Load",
+        summary:
+          "Load balancing challenges emerged as demand patterns shifted throughout the day.",
+        details:
+          "Keep the top summary crisp and directional, then use this body copy for the fuller interpretation: what changed, why it mattered, and which feature or regime shift the figures below are meant to support.",
+        figures: [],
+      },
+
+
+      {
+        date: "01 Mar 2026",
+        country: "Austria",
+        feature: "Price",
+        summary:
+          "Price volatility surged as a late-day wind drop tightened the system and triggered balancing action.",
+        details:
+          "Keep the top summary crisp and directional, then use this body copy for the fuller interpretation: what changed, why it mattered, and which feature or regime shift the figures below are meant to support.",
+        figures: [],
+      },
+
+
     ],
   },
   about: {
     eyebrow: "About DeepPrior",
-    title: "A Quantitative Research Organization with a Vision for Impact",
+    title: "A Research Organization with a Vision for Impact",
     visionTitle: "Our Vision",
     visionText:
       "At DeepPrior, our mission is to redefine the intelligence layer of European energy markets and power systems. We believe that the transition to a carbon-neutral future requires more than just raw data; it demands a deep understanding of the underlying operational and physical logic of energy systems. We are dedicated to exploring the intersection of deep learning and prior domain knowledge, transforming complex research into accurate forecasting engines.",
   },
+  footer: {
+    locationTitle: "Location",
+    locationLines: ["A street, 7", "A city", "A country"],
+    contactTitle: "Contact",
+    contactLines: ["@deepprior.com", "+49 123 456789"],
+    socialTitle: "Social",
+    socials: [
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/deepprior/",
+      },
+      {
+        label: "RedNote",
+        href: "https://www.xiaohongshu.com/",
+      },
+      {
+        label: "X",
+        href: "https://x.com/",
+      },
+    ],
+  },
 };
+
 
 
 

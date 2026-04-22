@@ -21,8 +21,10 @@
   <body>
     <main>
       <section class="hero" aria-label="DeepPrior landing page">
-        <div class="hero__light" aria-hidden="true"></div>
-        <div class="hero__dust" aria-hidden="true"></div>
+        <div class="hero__media" aria-hidden="true">
+          <video class="hero__video" data-hero-video muted playsinline autoplay preload="metadata"></video>
+        </div>
+
         <nav class="hero__nav" aria-label="Primary">
           <a href="#committee">Committee</a>
           <a href="#research">Research</a>
@@ -81,6 +83,10 @@
           </div>
 
           <div class="research-list" id="research-list" aria-live="polite"></div>
+
+          <div class="section-actions research__actions">
+            <button class="section-toggle section-toggle--inverse" type="button" data-research-toggle hidden aria-expanded="false">View all papers</button>
+          </div>
         </div>
       </section>
 
@@ -101,6 +107,10 @@
           </div>
 
           <div class="analysis-list" id="analysis-list" aria-live="polite"></div>
+
+          <div class="section-actions analysis__actions">
+            <button class="section-toggle" type="button" data-analysis-toggle hidden aria-expanded="false">View all posts</button>
+          </div>
         </div>
       </section>
 
@@ -124,16 +134,40 @@
     </main>
 
     <footer class="site-footer">
-      <p>
-        <span data-site-name>DeepPrior</span>
-        <span class="site-footer__dot">/</span>
-        <span data-footer-note>Energy quantitative forecasting</span>
-      </p>
+      <div class="site-footer__shell">
+        <div class="site-footer__grid">
+          <section class="site-footer__column" aria-labelledby="footer-location-title">
+            <p class="site-footer__label" id="footer-location-title" data-footer-location-title>Location</p>
+            <div class="site-footer__stack" data-footer-location></div>
+          </section>
+
+          <section class="site-footer__column" aria-labelledby="footer-contact-title">
+            <p class="site-footer__label" id="footer-contact-title" data-footer-contact-title>Contact</p>
+            <div class="site-footer__stack" data-footer-contact></div>
+          </section>
+
+          <section class="site-footer__column" aria-labelledby="footer-social-title">
+            <p class="site-footer__label" id="footer-social-title" data-footer-social-title>Social</p>
+            <div class="site-footer__stack site-footer__stack--links" data-footer-social></div>
+          </section>
+        </div>
+
+        <p class="site-footer__note">
+          <span data-site-name>DeepPrior</span>
+          <span class="site-footer__dot">/</span>
+          <span data-footer-note>A Quantitative Energy Research Organization</span>
+        </p>
+      </div>
     </footer>
 
     <script type="module" src="assets/scripts/main.js"></script>
   </body>
 </html>
+
+
+
+
+
 
 
 
