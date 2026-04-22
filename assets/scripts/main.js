@@ -1,13 +1,15 @@
-import { siteContent } from "./site-data.js";
+﻿import { siteContent } from "./site-data.js";
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const DEFAULT_VISIBLE_COMMITTEE_COUNT = 8;
 
 function hydrateCopy() {
   document.querySelectorAll("[data-site-name]").forEach((node) => {
     node.textContent = siteContent.brand.name;
   });
 
-  const tagline = document.querySelector("[data-tagline]");
+  const heroIntro = document.querySelector("[data-hero-intro]");
+  const heroHeadline = document.querySelector("[data-hero-headline]");
   const eyebrow = document.querySelector("[data-committee-eyebrow]");
   const title = document.querySelector("[data-committee-title]");
   const description = document.querySelector("[data-committee-description]");
@@ -18,9 +20,17 @@ function hydrateCopy() {
   const analysisEyebrow = document.querySelector("[data-analysis-eyebrow]");
   const analysisTitle = document.querySelector("[data-analysis-title]");
   const analysisDescription = document.querySelector("[data-analysis-description]");
+  const aboutEyebrow = document.querySelector("[data-about-eyebrow]");
+  const aboutTitle = document.querySelector("[data-about-title]");
+  const aboutVisionTitle = document.querySelector("[data-about-vision-title]");
+  const aboutVisionText = document.querySelector("[data-about-vision-text]");
 
-  if (tagline) {
-    tagline.textContent = siteContent.brand.tagline;
+  if (heroIntro) {
+    heroIntro.textContent = siteContent.brand.heroIntro;
+  }
+
+  if (heroHeadline) {
+    heroHeadline.textContent = siteContent.brand.heroHeadline;
   }
 
   if (eyebrow) {
@@ -62,26 +72,85 @@ function hydrateCopy() {
   if (analysisDescription) {
     analysisDescription.textContent = siteContent.analysis.description;
   }
-}
 
-function createPortrait(member) {
-  const portrait = document.createElement("div");
-  portrait.className = "member-card__portrait";
-
-  if (member.image) {
-    const image = document.createElement("img");
-    image.src = member.image;
-    image.alt = `${member.name} portrait`;
-    image.loading = "lazy";
-    portrait.append(image);
-    return portrait;
+  if (aboutEyebrow) {
+    aboutEyebrow.textContent = siteContent.about.eyebrow;
   }
 
-  const initials = document.createElement("span");
-  initials.className = "member-card__initials";
-  initials.textContent = member.initials;
-  portrait.append(initials);
-  return portrait;
+  if (aboutTitle) {
+    aboutTitle.textContent = siteContent.about.title;
+  }
+
+  if (aboutVisionTitle) {
+    aboutVisionTitle.textContent = siteContent.about.visionTitle;
+  }
+
+  if (aboutVisionText) {
+    aboutVisionText.textContent = siteContent.about.visionText;
+  }
+}
+function createMemberUniversityTag(university) {
+  const tag = document.createElement("span");
+  tag.className = "member-card__university";
+  tag.textContent = university;
+  return tag;
+}
+
+function getMemberLinkIcon(kind) {
+  const icons = {
+    website: `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2.25a9.75 9.75 0 1 0 0 19.5a9.75 9.75 0 0 0 0-19.5Zm6.89 8.625h-3.22a15.96 15.96 0 0 0-1.33-5.06a8.29 8.29 0 0 1 4.55 5.06Zm-6.14-5.74c.64.81 1.47 2.79 1.79 5.74h-5.08c.32-2.95 1.15-4.93 1.79-5.74a1.12 1.12 0 0 1 .75-.39c.26 0 .51.14.75.39Zm-3.09.68a15.97 15.97 0 0 0-1.33 5.06H5.11a8.29 8.29 0 0 1 4.55-5.06Zm-4.87 6.56h3.36c-.03.37-.05.74-.05 1.13c0 1.49.21 2.9.58 4.17a8.26 8.26 0 0 1-3.89-5.3Zm6.09 6.73c-.67-.9-1.49-2.93-1.74-5.23h4.72c-.25 2.3-1.07 4.33-1.74 5.23a1.14 1.14 0 0 1-.62.44a1.14 1.14 0 0 1-.62-.44Zm3.45-1.43c.37-1.27.58-2.68.58-4.17c0-.39-.02-.76-.05-1.13h3.36a8.26 8.26 0 0 1-3.89 5.3Z"/>
+      </svg>`,
+    linkedin: `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M5.4 3.6a1.8 1.8 0 1 0 0 3.6a1.8 1.8 0 0 0 0-3.6ZM3.9 8.85h3v11.25h-3V8.85Zm4.95 0h2.88v1.54h.04c.4-.76 1.38-1.8 2.84-1.8c3.04 0 3.6 2 3.6 4.6v6.91h-3v-6.12c0-1.46-.03-3.34-2.03-3.34c-2.04 0-2.36 1.59-2.36 3.24v6.22h-2.97V8.85Z"/>
+      </svg>`,
+    github: `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2.25a9.75 9.75 0 0 0-3.08 19c.49.09.67-.21.67-.47c0-.23-.01-1-.01-1.82c-2.74.6-3.32-1.16-3.32-1.16c-.45-1.13-1.1-1.43-1.1-1.43c-.9-.62.07-.61.07-.61c.99.07 1.51 1.02 1.51 1.02c.88 1.5 2.31 1.07 2.87.82c.09-.64.34-1.07.62-1.31c-2.19-.25-4.49-1.1-4.49-4.89c0-1.08.39-1.97 1.02-2.66c-.1-.25-.44-1.27.1-2.64c0 0 .84-.27 2.75 1.01a9.4 9.4 0 0 1 5 0c1.91-1.28 2.75-1.01 2.75-1.01c.54 1.37.2 2.39.1 2.64c.64.69 1.02 1.58 1.02 2.66c0 3.8-2.3 4.63-4.5 4.88c.35.3.67.9.67 1.82c0 1.31-.01 2.37-.01 2.69c0 .26.18.57.67.47A9.75 9.75 0 0 0 12 2.25Z"/>
+      </svg>`,
+    email: `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 5.25A2.25 2.25 0 0 1 5.25 3h13.5A2.25 2.25 0 0 1 21 5.25v13.5A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V5.25Zm1.7.05L12 10.94l7.3-5.64H4.7Zm14.8 1.62l-7.04 5.44a.75.75 0 0 1-.92 0L4.5 6.92v11.83c0 .41.34.75.75.75h13.5c.41 0 .75-.34.75-.75V6.92Z"/>
+      </svg>`,
+  };
+
+  return icons[kind] ?? "";
+}
+
+function createMemberLink(kind, href, memberName) {
+  const labels = {
+    website: "Website",
+    linkedin: "LinkedIn",
+    github: "GitHub",
+    email: "Email",
+  };
+
+  const label = labels[kind] ?? kind;
+
+  if (kind === "email") {
+    const button = document.createElement("button");
+    const email = href.replace(/^mailto:/i, "").trim();
+
+    button.type = "button";
+    button.className = `member-card__link member-card__link--${kind}`;
+    button.dataset.email = email;
+    button.innerHTML = `${getMemberLinkIcon(kind)}<span class="sr-only">${label}</span>`;
+    button.title = `Copy ${email}`;
+    button.setAttribute("aria-label", `${memberName} ${label}`);
+    return button;
+  }
+
+  const link = document.createElement("a");
+  link.className = `member-card__link member-card__link--${kind}`;
+  link.href = href;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  link.innerHTML = `${getMemberLinkIcon(kind)}<span class="sr-only">${label}</span>`;
+  link.title = label;
+  link.setAttribute("aria-label", `${memberName} ${label}`);
+  return link;
 }
 
 function createMemberCard(member, index) {
@@ -114,11 +183,51 @@ function createMemberCard(member, index) {
   toggle.hidden = true;
 
   body.append(role, name, bio, toggle);
-  card.append(createPortrait(member), body);
+
+  const universities = (member.universities ?? []).filter(Boolean);
+
+  if (universities.length) {
+    const universityTags = document.createElement("div");
+    universityTags.className = "member-card__universities";
+
+    universities.forEach((university) => {
+      universityTags.append(createMemberUniversityTag(university));
+    });
+
+    body.append(universityTags);
+  }
+
+  const links = member.links ?? {};
+  const linkEntries = [
+    ["website", links.website],
+    ["linkedin", links.linkedin],
+    ["github", links.github],
+    ["email", links.email],
+  ].filter(([, href]) => Boolean(href));
+
+  if (linkEntries.length) {
+    const linkGroup = document.createElement("div");
+    linkGroup.className = "member-card__links";
+
+    linkEntries.forEach(([kind, href]) => {
+      linkGroup.append(createMemberLink(kind, href, member.name));
+    });
+
+    if (links.email) {
+      const feedback = document.createElement("span");
+      feedback.className = "member-card__link-feedback";
+      feedback.hidden = true;
+      feedback.setAttribute("aria-live", "polite");
+      linkGroup.append(feedback);
+    }
+
+    body.append(linkGroup);
+  }
+
+  card.append(body);
 
   return card;
 }
-
 function renderCommittee() {
   const grid = document.querySelector("#team-grid");
 
@@ -129,12 +238,18 @@ function renderCommittee() {
   const fragment = document.createDocumentFragment();
 
   siteContent.committee.members.forEach((member, index) => {
-    fragment.append(createMemberCard(member, index));
+    const card = createMemberCard(member, index);
+
+    if (index >= DEFAULT_VISIBLE_COMMITTEE_COUNT) {
+      card.dataset.overflow = "true";
+    }
+
+    fragment.append(card);
   });
 
   grid.replaceChildren(fragment);
+  syncCommitteeCollection();
 }
-
 function createFigurePanel(figure, paperTitle, figureIndex) {
   const frame = document.createElement("figure");
   frame.className = "paper-figure";
@@ -195,9 +310,16 @@ function createResearchCard(paper, index) {
   const meta = document.createElement("div");
   meta.className = "paper-card__meta";
 
-  const journal = document.createElement("span");
-  journal.className = "paper-chip";
+  const journal = paper.paperUrl ? document.createElement("a") : document.createElement("span");
+  journal.className = paper.paperUrl ? "paper-chip paper-chip--link" : "paper-chip";
   journal.textContent = paper.journal;
+
+  if (paper.paperUrl) {
+    journal.href = paper.paperUrl;
+    journal.target = "_blank";
+    journal.rel = "noreferrer";
+    journal.setAttribute("aria-label", `${paper.title} paper link`);
+  }
 
   const year = document.createElement("span");
   year.className = "paper-chip";
@@ -219,14 +341,6 @@ function createResearchCard(paper, index) {
   codeLink.textContent = "Code";
   codeLink.setAttribute("aria-label", `${paper.title} code`);
 
-  const paperLink = document.createElement("a");
-  paperLink.className = "paper-chip paper-chip--link";
-  paperLink.href = paper.paperUrl;
-  paperLink.target = "_blank";
-  paperLink.rel = "noreferrer";
-  paperLink.textContent = "Link";
-  paperLink.setAttribute("aria-label", `${paper.title} paper link`);
-
   const citationButton = document.createElement("button");
   citationButton.type = "button";
   citationButton.className = "paper-chip paper-chip--button";
@@ -235,7 +349,7 @@ function createResearchCard(paper, index) {
   citationButton.dataset.bibtex = paper.bibtex;
   citationButton.setAttribute("aria-label", `${paper.title} citation`);
 
-  meta.append(journal, year, paperLink, dataLink, codeLink, citationButton);
+  meta.append(journal, year, dataLink, codeLink, citationButton);
   intro.append(indexLabel, title, authors, abstractLabel, abstract, meta);
 
   const figures = document.createElement("div");
@@ -252,7 +366,6 @@ function createResearchCard(paper, index) {
 
   return card;
 }
-
 function renderResearch() {
   const list = document.querySelector("#research-list");
 
@@ -380,6 +493,65 @@ function renderAnalysis() {
   list.replaceChildren(fragment);
 }
 
+function syncCommitteeCollection() {
+  const section = document.querySelector(".team");
+  const grid = document.querySelector("#team-grid");
+  const button = document.querySelector("[data-team-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(grid instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  const cards = [...grid.querySelectorAll(".member-card")];
+  const hasOverflow = cards.length > DEFAULT_VISIBLE_COMMITTEE_COUNT;
+
+  if (!hasOverflow) {
+    section.classList.add("is-expanded");
+    button.hidden = true;
+    button.textContent = "View all members";
+    button.setAttribute("aria-expanded", "true");
+    return;
+  }
+
+  button.hidden = false;
+
+  const expanded = section.classList.contains("is-expanded");
+  button.textContent = expanded ? "Show fewer" : "View all members";
+  button.setAttribute("aria-expanded", expanded ? "true" : "false");
+}
+
+function setupCommitteeCollectionToggle() {
+  const section = document.querySelector(".team");
+  const grid = document.querySelector("#team-grid");
+  const button = document.querySelector("[data-team-toggle]");
+
+  if (!(section instanceof HTMLElement) || !(grid instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  syncCommitteeCollection();
+
+  button.addEventListener("click", () => {
+    const expanded = section.classList.toggle("is-expanded");
+
+    button.textContent = expanded ? "Show fewer" : "View all members";
+    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+    if (expanded) {
+      [...grid.querySelectorAll(".member-card")]
+        .slice(DEFAULT_VISIBLE_COMMITTEE_COUNT)
+        .forEach((card) => card.classList.add("is-visible"));
+    } else {
+      section.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+
+    requestAnimationFrame(syncCommitteeBios);
+  });
+}
+
 async function copyText(text) {
   if (navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text);
@@ -443,6 +615,64 @@ function setupResearchActions() {
   });
 }
 
+function setupCommitteeLinkActions() {
+  const grid = document.querySelector("#team-grid");
+
+  if (!(grid instanceof HTMLElement)) {
+    return;
+  }
+
+  grid.addEventListener("click", async (event) => {
+    const trigger = event.target instanceof Element ? event.target.closest(".member-card__link--email") : null;
+
+    if (!(trigger instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const email = trigger.dataset.email?.trim();
+
+    if (!email) {
+      return;
+    }
+
+    const feedback = trigger.parentElement?.querySelector(".member-card__link-feedback");
+    const resetTimer = trigger.dataset.resetTimer;
+
+    if (resetTimer) {
+      window.clearTimeout(Number(resetTimer));
+    }
+
+    try {
+      await copyText(email);
+      trigger.classList.add("is-copied");
+
+      if (feedback instanceof HTMLElement) {
+        feedback.textContent = `Copied: ${email}`;
+        feedback.hidden = false;
+      }
+    } catch {
+      trigger.classList.remove("is-copied");
+
+      if (feedback instanceof HTMLElement) {
+        feedback.textContent = "Copy failed";
+        feedback.hidden = false;
+      }
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      trigger.classList.remove("is-copied");
+
+      if (feedback instanceof HTMLElement) {
+        feedback.textContent = "";
+        feedback.hidden = true;
+      }
+
+      delete trigger.dataset.resetTimer;
+    }, 2200);
+
+    trigger.dataset.resetTimer = String(timeoutId);
+  });
+}
 function syncCommitteeBios() {
   const cards = document.querySelectorAll(".member-card");
 
@@ -924,6 +1154,14 @@ renderCommittee();
 renderResearch();
 renderAnalysis();
 setupCommitteeToggles();
+setupCommitteeCollectionToggle();
+setupCommitteeLinkActions();
 setupResearchActions();
 setupReveal();
-mountPriceCanvas();
+
+
+
+
+
+
+

@@ -21,24 +21,25 @@
   <body>
     <main>
       <section class="hero" aria-label="DeepPrior landing page">
-        <canvas class="hero__canvas" id="price-canvas" aria-hidden="true"></canvas>
-        <div class="hero__grid" aria-hidden="true"></div>
-        <div class="hero__veil" aria-hidden="true"></div>
-
+        <div class="hero__light" aria-hidden="true"></div>
+        <div class="hero__dust" aria-hidden="true"></div>
         <nav class="hero__nav" aria-label="Primary">
           <a href="#committee">Committee</a>
           <a href="#research">Research</a>
-          <a href="#analysis">Analysis</a>
+          <a href="#analysis">Insights</a>
+          <a href="#about">About</a>
         </nav>
 
-        <div class="hero__content">
+        <div class="hero__brand">
           <h1 class="hero__wordmark" data-site-name>DeepPrior</h1>
-          <p class="hero__tagline" data-tagline>
-            A quantitative research organization in energy forecasting
+          <p class="hero__intro" data-hero-intro>
+            We are a quantitative research organization developing accurate AI forecasting models for energy markets and power systems, helping both academic and industry partners turn advanced research into real-world impact.
           </p>
         </div>
 
-        <a class="hero__scroll" href="#committee">Scroll</a>
+        <div class="hero__headline-wrap">
+          <p class="hero__headline" data-hero-headline>Quantitative Energy Research</p>
+        </div>
       </section>
 
       <section class="team" id="committee" aria-labelledby="committee-title">
@@ -56,6 +57,10 @@
           </div>
 
           <div class="team-grid" id="team-grid" aria-live="polite"></div>
+
+          <div class="team__actions">
+            <button class="team__toggle-all" type="button" data-team-toggle hidden aria-expanded="false">View all members</button>
+          </div>
         </div>
       </section>
 
@@ -82,12 +87,12 @@
       <section class="analysis" id="analysis" aria-labelledby="analysis-title">
         <div class="section-shell">
           <p class="section-label reveal" data-analysis-eyebrow>
-            Analysis
+            Insights
           </p>
 
           <div class="section-header reveal">
             <h2 id="analysis-title" data-analysis-title>
-              Weekly analysis built for signal.
+              Weekly insights built for signal.
             </h2>
             <p data-analysis-description>
               Add structured market notes, weekly observations, and supporting figures
@@ -96,6 +101,24 @@
           </div>
 
           <div class="analysis-list" id="analysis-list" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="about" id="about" aria-labelledby="about-title">
+        <div class="section-shell about__shell">
+          <div class="about__content reveal">
+            <p class="about__eyebrow" data-about-eyebrow>About DeepPrior</p>
+            <h2 id="about-title" class="about__title" data-about-title>
+              A Quantitative Research Organization with a Vision for Impact
+            </h2>
+
+            <div class="about__spacer" aria-hidden="true"></div>
+
+            <h3 class="about__vision-title" data-about-vision-title>Our Vision</h3>
+            <p class="about__vision-copy" data-about-vision-text>
+              At DeepPrior, our mission is to redefine the intelligence layer of European energy markets and power systems. We believe that the transition to a carbon-neutral future requires more than just raw data; it demands a deep understanding of the underlying operational and physical logic of energy systems. We are dedicated to exploring the intersection of deep learning and prior domain knowledge, transforming complex research into accurate forecasting engines.
+            </p>
+          </div>
         </div>
       </section>
     </main>
@@ -111,3 +134,6 @@
     <script type="module" src="assets/scripts/main.js"></script>
   </body>
 </html>
+
+
+
