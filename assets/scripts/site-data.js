@@ -41,6 +41,20 @@
         bio: "Ruiling combines top-tier financial rigor with strategic development for high-growth technology. Her foundation is anchored in Investment Banking at Morgan Stanley and SMBC in London and Frankfurt, with professional tenures at PwC, Infineon, and Deutsche Börse. With a background in international business development for Chinese SaaS and robotics startups, she bridges the gap between technical research and commercial strategy. Ruiling holds an MSc in Finance from Frankfurt School, with international studies at UC Berkeley and UBC. At DeepPrior, she steers operations and finance within the European energy forecasting sector.",
         image: "",
       },
+            {
+        name: "Prof. Qingsong Wen",
+        role: "Chair",
+        initials: "QW",
+        universities: ["University of Oxford"],
+        links: {
+          website: "https://sites.google.com/site/qingsongwen8/",
+          linkedin: "https://www.linkedin.com/in/qingsong-wen-22814156/",
+          github: "",
+          email: "qingsongedu@gmail.com",
+        },
+        bio: "Qingsong Wen is PhD Supervisor at the University of Oxford, a Forbes Top 100 Most Influential Chinese Elite, and Head of AI & Chief Scientist at Squirrel Ai Learning. He specializes in machine learning, data mining, and signal processing, with a particular focus on AI for time series. His academic path includes an M.S. and Ph.D. in Electrical and Computer Engineering from Georgia Tech, complemented by industrial experience at Alibaba, Qualcomm, and Marvell. He has published over 200 papers with more than 20,000 citations, and holds leadership roles across IEEE and INNS, including Chair of the IEEE CIS Task Force on AI for Time Series and Spatio-Temporal Data. At DeepPrior, Qingsong advises research at the intersection of AI, time-series modeling, and intelligent decision-making systems.",
+        image: "",
+      },
       {
         name: "Prof. Peter Palensky",
         role: "Chair",
@@ -80,7 +94,7 @@
           github: "",
           email: "Haiyan.Lu@uts.edu.au",
         },
-        bio: "Haiyan Lu works on artificial intelligence, data analytics, and time series modelling, with a focus on decision systems, intelligent services, and trustworthy digital systems. She serves as Head of Discipline in Data Analytics. At DeepPrior, Haiyan brings leadership in AI, data science, and intelligent decision-making for real-world digital and energy applications.",
+        bio: "Haiyan works on artificial intelligence, data analytics, and time series modelling, with a focus on decision systems, intelligent services, and trustworthy digital systems. She serves as Head of Discipline in Data Analytics. At DeepPrior, Haiyan brings leadership in AI, data science, and intelligent decision-making for real-world digital and energy applications.",
         image: "",
       },
       {
